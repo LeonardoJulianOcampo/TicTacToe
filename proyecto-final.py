@@ -1,6 +1,5 @@
 import os
-import random
-
+from random import randrange
 
 ############################################################ Definición de funciones ############################################################
 
@@ -41,20 +40,23 @@ def display_board(board):
     print_divider()
 
 
-def enter_human_move(board):
-    move = int(input("Su turno. Ingrese un movimiento valido:"))
-    if move >= 0 and move <=9:
-        free_files = make_list_of_free_fields(board)
-        if (move in free_files):
-            push_move(move,board)
-    else:
-        print("Movimiento Invalido")
+# def enter_human_move(board):
+#     move = int(input("Su turno. Ingrese un movimiento valido:"))
+#     if move >= 0 and move <=9:
+#         free_files = make_list_of_free_fields(board)
+#         if (move in free_files):
+#             push_move(move,board,0)
+#     else:
+#         print("Movimiento Invalido")
     
-def push_move(movement,board):
+def push_move(movement,board,player):
     #Defino un diccionario con la equivalencias de los números con las coordenadas en el tablero. Por ejemplo si introduzco un uno se que las coordenadas son (0,0) y así
     equivalences = {1:(0,0), 2:(0,1), 3:(0,2), 4:(1,0), 5:(1,1), 6:(1,2), 7:(2,0), 8:(2,1), 9:(2,2)}
     coordinates = equivalences[movement]
-    board[coordinates[0]][coordinates[1]] = "X"
+    if player == 0:
+        board[coordinates[0]][coordinates[1]] = "X"
+    if player == 1:
+        board[coordinates[0]][coordinates[1]] = "0"        
 
 def make_list_of_free_fields(board):
     # La función examina el tablero y construye una lista de todos los cuadros vacíos. 
@@ -67,17 +69,28 @@ def make_list_of_free_fields(board):
     return free_coords
 
 def playHuman():
-    move = int(input("Su turno. Ingrese un movimiento valido:"))
-    if move >= 0 and move <=9:
-        free_files = make_list_of_free_fields(board)
-        if (move in free_files):
-            push_move(move,board)
-    else:
-        print("Movimiento Invalido")
+    flag = 1
+    while flag:
+        move = int(input("Su turno. Ingrese un movimiento valido:"))
+        if move > 0 and move <10:
+            free_files = make_list_of_free_fields(board)
+            if (move in free_files):
+                push_move(move,board)
+                flag = 0
+        else:
+            print("Movimiento Invalido. Reintentar")
     
 
 def playComputer():
-    move = 
+    flag = 1
+    while flag:
+        move = randrange(9)  
+        free_files = make_list_of_free_fields(board)
+        if(move in free_files):
+            push_move(move,board,1)
+            flag = 0
+
+
 
 def whoPlays():
     turn = 0
@@ -89,8 +102,13 @@ def whoPlays():
             playComputer()
             turn = 0
 
-def checkGame(board):
-    pass
+def isThereaWinner(board):                                    #Deberia ser una funcion que determine si algun jugador ha llegado a cumplir la condicion del juego, retornando
+                                                              #que jugador lo ha conseguido. debería ser invocada luego de cada movimiento correcto
+    aux = [0,0]                                               # aux = [Ganador?,Jugador Ganador] Si hay ganador el primer elemento es 1 y el segundo elemento indica el jugador ganador.
+                                                              # 0 = humano 1 = computadora
+                                                    
+
+    
 
 
 ############################################################ Sección Principal ############################################################
@@ -106,8 +124,8 @@ display_board(board)
 
 
 while 1:
-    checkGame(board)
-    whoPlays() 
+    if isThereaWinner() == False:
+        whoPlays() 
 
 
 
