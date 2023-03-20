@@ -56,7 +56,7 @@ def push_move(movement,board,player):
     if player == 0:
         board[coordinates[0]][coordinates[1]] = "X"
     if player == 1:
-        board[coordinates[0]][coordinates[1]] = "0"        
+        board[coordinates[0]][coordinates[1]] = "O"        
 
 def make_list_of_free_fields(board):
     # La función examina el tablero y construye una lista de todos los cuadros vacíos. 
@@ -68,22 +68,26 @@ def make_list_of_free_fields(board):
                 free_coords.append(board[i][j])
     return free_coords
 
-def playHuman():
+def playHuman(board):
     flag = 1
     while flag:
+        os.system("clear")
+        display_board(board)
         move = int(input("Su turno. Ingrese un movimiento valido:"))
         if move > 0 and move <10:
             free_files = make_list_of_free_fields(board)
             if (move in free_files):
-                push_move(move,board)
+                push_move(move,board,0)
                 flag = 0
         else:
             print("Movimiento Invalido. Reintentar")
     
 
-def playComputer():
+def playComputer(board):
     flag = 1
     while flag:
+        os.system("clear")
+        display_board(board)
         move = randrange(9)  
         free_files = make_list_of_free_fields(board)
         if(move in free_files):
@@ -103,30 +107,100 @@ def whoPlays():
             turn = 0
 
 def isThereaWinner(board):                                    #Deberia ser una funcion que determine si algun jugador ha llegado a cumplir la condicion del juego, retornando
-                                                              #que jugador lo ha conseguido. debería ser invocada luego de cada movimiento correcto
+    diagonal1 = []
+    diagonal2 = []                                             #que jugador lo ha conseguido. debería ser invocada luego de cada movimiento correcto
     aux = [0,0]                                               # aux = [Ganador?,Jugador Ganador] Si hay ganador el primer elemento es 1 y el segundo elemento indica el jugador ganador.
                                                               # 0 = humano 1 = computadora
-                                                    
-
+    for i in range(3):                                        # barrido de filas 
+        if board[i].count("X") == 3:
+            aux[0] = 1
+            aux[1] = 0
+            return aux                                   
+        if board[i].count("O") == 3:
+            aux[0] = 1
+            aux[1] = 1
+            return aux
     
+    transposed_board = list(map(list,zip(*board)))
+
+    for i in range(3):
+        if transposed_board[i].count("X") == 3:
+            aux[0] = 1
+            aux[1] = 0
+            return aux
+        if transposed_board[i].count("O") == 3:
+            aux[0] = 1
+            aux[1] = 1
+            return aux
+
+    for i in range(3):
+        diagonal1.append(board[i][i])
+    for i in range(3):
+        diagonal2.append(board[i][-i-1])
+    
+    for i in range(3):
+        if diagonal1.count("X") == 3:
+            aux[0] = 1
+            aux[1] = 0
+            return aux
+        if diagonal1.count("O") == 3:
+            aux[0] = 1
+            aux[1] = 1
+            return aux
+    
+    for i in range(3):
+        if diagonal2.count("X") == 3:
+            aux[0] = 1
+            aux[1] = 0
+            return aux
+        if diagonal2.count("O") == 3:
+            aux[0] = 1
+            aux[1] = 1
+            return aux
+    
+ 
+
+    return aux
+
+
 
 
 ############################################################ Sección Principal ############################################################
 
 print("TIC-TAC-TOE")
 print("Seleccione su movimiento (1-9):")
-turn = 0
-
+flag = 1
+turn = 0 
 board = initializeBoard()
+game_status = []
 
-os.system("cls")
-display_board(board)
+#game_status = isThereaWinner(board)
+#print(game_status) 
 
-
-while 1:
-    if isThereaWinner() == False:
-        whoPlays() 
-
+while flag:
+    game_status = isThereaWinner(board)
+    if game_status[0]==1:
+        if game_status[1] == 0:
+            os.system("clear")
+            display_board(board) 
+            print("Humano Gana!")
+            flag = 0
+        if game_status[1] == 1:
+            os.system("clear")
+            display_board(board)
+            print("Computadora Gana!")
+            flag = 0
+    else:
+        if turn == 0:
+            playHuman(board)
+            os.system("clear")
+            display_board(board)
+            turn = 1
+        else:
+            playComputer(board)
+            os.system("clear")
+            display_board(board)
+            turn = 0  
 
 
 
